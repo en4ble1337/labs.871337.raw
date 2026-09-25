@@ -21,6 +21,31 @@ Decode on this model is bound by memory bandwidth: every generated token reads t
 | [`REPORT.md`](REPORT.md) | The full engagement: audit, baseline, engine selection, the near-max-context hang and its root cause, memory tuning, speculative decoding sweep, concurrency, functional suite, long context, soak, deployment, rejected alternatives, and the time and token cost. |
 | [`APPENDIX-A_vanilla-vs-tuned-vllm.md`](APPENDIX-A_vanilla-vs-tuned-vllm.md) | Stock vs model-card vs tuned, all three run back to back on identical hardware, weights, and scripts. The cleanest comparison in the set. |
 | [`OPTIMAL_CONFIG.md`](OPTIMAL_CONFIG.md) | The final configuration on one page, with the reasoning for each setting, plus operations and rollback. |
+| [`bench/`](bench/) | The measurement harness that produced every number in the report. See *Running the harness* below. |
+| [`deploy/`](deploy/) | The production deployment: Docker Compose file, systemd unit, GPU-free wait gate, and batch-shape warmup. |
+
+## Running the harness
+
+The harness is the durable part of this set: the numbers belong to one machine, but the loop that produced them can be re-run on yours. It targets any OpenAI-compatible endpoint; `launch.sh` and the probe scripts additionally assume Docker, the NVIDIA container toolkit, and the `vllm/vllm-openai` image.
+
+| Script | What it does |
+| --- | --- |
+| `bench.py` | Streaming benchmark. `decode` (fixed chat/code/json/reasoning workloads), `ctx` (needle-in-a-haystack at a target context size, retrieval checked), `conc` (N concurrent streams). Samples GPU telemetry via `nvidia-smi` throughout. |
+| `func.py` | Functional gate: chat, executed code, reasoning with thinking on and off, parallel/typed/streaming tool calls, tool restraint, multi-turn correctness, and prefix-cache hits. Exit code is the number of failed checks. |
+| `launch.sh` | Starts one vLLM configuration in a container and waits until it serves or dies. |
+| `run_decode_cfg.sh` | Launch, decode benchmark, and speculative-decoding acceptance stats for one configuration. The unit of the tuning sweep. |
+| `ctx_probe.sh` / `full_probe.sh` | Launch plus a near-max-context request under a 420 s watchdog. This is how the long-context hang was caught. |
+| `soak.sh` | Sustained mixed workload against a running server, with throttle, clock, temperature, and VRAM drift summaries. |
+
+```bash
+pip install -r bench/requirements.txt
+python3 bench/bench.py decode --base http://127.0.0.1:8000 --model <served-model-name> --label my-baseline
+python3 bench/func.py my-baseline --base http://127.0.0.1:8000 --model <served-model-name>
+```
+
+Environment overrides: `RESULTS_DIR` (default `results/`), `PY` (Python interpreter for the shell scripts, default `python3`), `MODELS_DIR` (host model directory for `launch.sh`, default `/models`), `DOCKER_ENV` (extra `docker run` flags, e.g. `-e VLLM_USE_V2_MODEL_RUNNER=0`). Model name, served name, context sizes, and `--tok-per-sentence` (tokenizer-specific, calibrated at 38.64 for this model) are set for this engagement; change them for yours.
+
+The `deploy/` files are this host's production setup, published as a worked example rather than a default. They expect to be installed under `/opt/vllm-qwen38/`.
 
 ## How to read the numbers
 
@@ -35,5 +60,7 @@ Three caveats that materially change how the results should be read, all stated 
 ## Sanitization
 
 Host names, the LAN address, and host access details were removed. Placeholders such as `<host-ip>` mark where an address was. Loopback and bind addresses (`127.0.0.1`, `0.0.0.0`) are kept, since they are not identifying.
+
+The harness scripts were changed only for portability: hardcoded working-directory paths became relative paths with environment overrides, and `func.py` gained a `--model` flag. Measurement logic, workloads, and defaults are unchanged from the runs in the report.
 
 No measured value was altered.

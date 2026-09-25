@@ -1,0 +1,48 @@
+# Qwen3.8-27B NVFP4 (RTX 5090) on vLLM 0.29.0 — see ../REPORT.md
+# Model: gittensor-model-hub/Qwen3.8-27B-NVFP4-RTX5090 @ branch pre-final
+#        commit 35fd99fb8434ef70ee61372df3face5174bed2c8 (NVFP4 lm_head, MTP head present;
+#        'main' removed the MTP head, so MTP speculative decoding needs this revision)
+name: vllm-qwen38
+services:
+  vllm:
+    image: vllm/vllm-openai:v0.29.0   # digest sha256:c291476760558...
+    container_name: vllm-qwen38
+    restart: "no"                      # lifecycle owned by systemd unit vllm-qwen38.service
+    ipc: host
+    init: true                         # tini as PID 1: clean signal handling / zombie reaping
+    ports: ["11434:8000"]              # same port as the previous Ollama service
+    volumes:
+      - /models:/models:ro
+      - /opt/vllm-qwen38/cache:/root/.cache   # FlashInfer JIT + torch.compile caches (fast restarts)
+    environment:
+      # vLLM 0.29 V2 model runner hangs on MTP + ~261K-token prefill; V1 runner is stable and faster.
+      VLLM_USE_V2_MODEL_RUNNER: "0"
+    deploy:
+      resources:
+        reservations:
+          devices: [{driver: nvidia, count: all, capabilities: [gpu]}]
+    logging:
+      driver: json-file
+      options: {max-size: "100m", max-file: "5"}
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://127.0.0.1:8000/health"]
+      interval: 30s
+      timeout: 10s
+      start_period: 900s
+    command:
+      - --model=/models/Qwen3.8-27B-NVFP4-RTX5090-pre-final
+      - --served-model-name=qwen3.8-27b
+      - --quantization=modelopt
+      - --kv-cache-dtype=fp8
+      - --trust-remote-code
+      - --max-model-len=262144
+      - --max-num-seqs=8
+      - --gpu-memory-utilization=0.98
+      - --enable-prefix-caching
+      - --enable-prompt-tokens-details
+      - --speculative-config={"method":"mtp","num_speculative_tokens":4}
+      - --reasoning-parser=qwen3
+      - --enable-auto-tool-choice
+      - --tool-call-parser=qwen3_xml
+      - --host=0.0.0.0
+      - --port=8000

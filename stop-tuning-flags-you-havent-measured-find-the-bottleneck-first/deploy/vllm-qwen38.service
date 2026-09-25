@@ -1,0 +1,21 @@
+[Unit]
+Description=vLLM OpenAI server - Qwen3.8-27B NVFP4 (port 11434)
+After=docker.service network-online.target
+Requires=docker.service
+Conflicts=ollama.service
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/vllm-qwen38
+ExecStartPre=-/usr/bin/docker compose -f /opt/vllm-qwen38/compose.yaml down
+ExecStartPre=/opt/vllm-qwen38/wait-gpu-free.sh
+ExecStart=/usr/bin/docker compose -f /opt/vllm-qwen38/compose.yaml up --no-log-prefix --abort-on-container-exit --exit-code-from vllm
+ExecStartPost=/bin/sh -c '/opt/vllm-qwen38/warmup.sh >/dev/null 2>&1 &'
+ExecStop=/usr/bin/docker compose -f /opt/vllm-qwen38/compose.yaml down
+TimeoutStartSec=300
+TimeoutStopSec=120
+Restart=always
+RestartSec=15
+
+[Install]
+WantedBy=multi-user.target
