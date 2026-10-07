@@ -1,0 +1,28 @@
+== CT 101: status: running
+== CT 102: status: running
+== CT 103: status: running
+== CT 104: status: stopped
+== CT 105: status: running
+== CT 106: status: running
+== CT 9001: status: running
+== CT 9996: status: stopped
+== 102 docker
+<renter-instance> Up 34 minutes
+== GPU
+memory.used [MiB], power.limit [W], utilization.gpu [%]
+27241 MiB, 500.00 W, 0 %
+3332087, 27150 MiB
+== snapshots on 105
+`-> article-test-20261007-1     2026-10-07 08:43:36     no-description
+ `-> article-test-20261007-2    2026-10-07 08:43:37     no-description
+  `-> article-test-20261007-3   2026-10-07 08:43:38     no-description
+   `-> before-break             2026-10-07 08:43:56     no-description
+    `-> before-break-2          2026-10-07 08:45:17     no-description
+     `-> current                                        You are here!
+== thin pool
+  LV   LSize  Data%  Meta% 
+  hdd1 <1.79t 63.98  2.73  
+== VMs
+      VMID NAME                 STATUS     MEM(MB)    BOOTDISK(GB) PID       
+       100 <vm-1-name> stopped    6048             132.00 0         
+      9000 <vm-2-name> stopped    4096              32.00 0         

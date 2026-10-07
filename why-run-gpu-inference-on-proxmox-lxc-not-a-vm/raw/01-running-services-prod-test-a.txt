@@ -1,0 +1,6 @@
+===== CT 102
+<container-id> <renter-image> <renter-instance> Up 30 minutes <published-ports>
+  docker.service                          loaded active running Docker Application Container Engine
+===== CT 105
+  docker.service                                 loaded active running Docker Application Container Engine
+vllm-qwen38.service

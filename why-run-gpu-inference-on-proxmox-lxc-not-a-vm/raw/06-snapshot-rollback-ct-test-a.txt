@@ -1,0 +1,34 @@
+### original compose sha
+6b2c70faf432e4361766fe158055d5ab5c3d15d02b71ec3e346af3a4ec746860  /opt/vllm-qwen38/compose.yaml
+  Logical volume "snap_vm-105-disk-0_before-break" created.
+>>> snapshot before-break rc=0 elapsed=1.205157895s (start=1791380635.620091508)
+>>> pct stop 105 rc=0 elapsed=3.200109677s (start=1791380636.830850882)
+mounted at 
+sed: can't read /opt/vllm-qwen38/compose.yaml: No such file or directory
+ugrep: warning: /opt/vllm-qwen38/compose.yaml: No such file or directory
+WARN: Systemd 249 detected. You may need to enable nesting.
+Task finished with 1 warning(s)!
+>>> pct start 105 (broken) rc=0 elapsed=3.181967599s (start=1791380642.040781080)
+### confirm broken: docker compose pull (no GPU used)
+ Image vllm/vllm-openai:v0.29.0 Pulling 
+ Image vllm/vllm-openai:v0.29.0 Pulled 
+ Network vllm-qwen38_default Created 
+ Container vllm-qwen38 Creating 
+ Container vllm-qwen38 Created 
+>>> pct stop 105 rc=0 elapsed=2.310143291s (start=1791380648.351850938)
+  Logical volume "vm-105-disk-0" successfully removed.
+  Logical volume "vm-105-disk-0" created.
+  Logical volume hdd1/vm-105-disk-0 changed.
+>>> pct rollback 105 before-break rc=0 elapsed=1.322023048s (start=1791380650.667219867)
+WARN: Systemd 249 detected. You may need to enable nesting.
+Task finished with 1 warning(s)!
+>>> pct start 105 (after rollback) rc=0 elapsed=45.761642810s (start=1791380651.993907096)
+### after rollback
+6b2c70faf432e4361766fe158055d5ab5c3d15d02b71ec3e346af3a4ec746860  /opt/vllm-qwen38/compose.yaml
+    image: vllm/vllm-openai:v0.29.0   # digest sha256:c291476760558...
+sha256:fba1a5021627
+disabled
+inactive
+status: running
+status: running
+3332087, 27150 MiB

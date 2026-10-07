@@ -1,0 +1,12 @@
+### pct list
+### start 1791380463.917909247
+VMID       Status     Lock         Name                
+101        running                 <ct-other-1>
+102        running                 <ct-prod>    
+103        running                 <ct-other-2>    
+104        stopped                 <ct-test-b>   
+105        running                 <ct-test-a>  
+106        running                 <ct-other-3>            
+9001       running                 <ct-other-4>             
+9996       stopped                 <ct-other-5>  
+### rc=0 end 1791380464.885513070

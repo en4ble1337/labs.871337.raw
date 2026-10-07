@@ -1,0 +1,7 @@
+### pvesm status
+### start 1791380463.261185623
+Name             Type     Status     Total (KiB)      Used (KiB) Available (KiB)        %
+hdd1          lvmthin     active      1919827968      1228305933       691522034   63.98%
+local             dir     active       217989888        16488320       201501568    7.56%
+local-zfs     zfspool     active       215134788        13633220       201501568    6.34%
+### rc=0 end 1791380463.915651039

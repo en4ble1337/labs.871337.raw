@@ -1,0 +1,27 @@
+  Logical volume "snap_vm-105-disk-0_before-break-2" created.
+>>> snapshot before-break-2 rc=0 elapsed=1.229755008s (start=1791380716.527681471)
+### bad upgrade: image tag -> nonexistent
+ee4ec7d07334c0676cfe72a7f1eea9c849ba4e560048c2c267037c3f69da94e0  /opt/vllm-qwen38/compose.yaml
+    image: vllm/vllm-openai:v0.0.0-does-not-exist   # digest sha256:c291476760558...
+### confirm broken (pull + create, GPU never touched)
+ Image vllm/vllm-openai:v0.0.0-does-not-exist Pulling 
+ Image vllm/vllm-openai:v0.0.0-does-not-exist Error manifest for vllm/vllm-openai:v0.0.0-does-not-exist not found: manifest unknown: manifest unknown
+Error response from daemon: manifest for vllm/vllm-openai:v0.0.0-does-not-exist not found: manifest unknown: manifest unknown
+>>> compose pull rc=0 elapsed=1.280943786s (start=1791380719.379562420)
+ Image vllm/vllm-openai:v0.0.0-does-not-exist Pulling 
+ Image vllm/vllm-openai:v0.0.0-does-not-exist Error manifest for vllm/vllm-openai:v0.0.0-does-not-exist not found: manifest unknown: manifest unknown
+Error response from daemon: manifest for vllm/vllm-openai:v0.0.0-does-not-exist not found: manifest unknown: manifest unknown
+>>> pct stop 105 rc=0 elapsed=2.355065959s (start=1791380721.866059823)
+  Logical volume "vm-105-disk-0" successfully removed.
+  Logical volume "vm-105-disk-0" created.
+  Logical volume hdd1/vm-105-disk-0 changed.
+>>> pct rollback 105 before-break-2 rc=0 elapsed=1.322047648s (start=1791380724.225831314)
+>>> pct start 105 rc=0 elapsed=46.039100119s (start=1791380725.553208624)
+### after rollback
+6b2c70faf432e4361766fe158055d5ab5c3d15d02b71ec3e346af3a4ec746860  /opt/vllm-qwen38/compose.yaml
+    image: vllm/vllm-openai:v0.29.0   # digest sha256:c291476760558...
+disabled
+inactive
+### 'serving' check NOT run: GPU occupied by production CT 102 (27 GB); vLLM needs ~30.7 GiB
+status: running
+3332087, 27150 MiB

@@ -1,0 +1,6 @@
+### qm list
+### start 1791380464.887685916
+      VMID NAME                 STATUS     MEM(MB)    BOOTDISK(GB) PID       
+       100 <vm-1-name> stopped    6048             132.00 0         
+      9000 <vm-2-name> stopped    4096              32.00 0         
+### rc=0 end 1791380465.686084163

@@ -1,0 +1,13 @@
+### host
+NVRM version: NVIDIA UNIX Open Kernel Module for x86_64  580.82.09  Release Build  (dvs-builder@U22-I3-C16-01-3)  Fri Aug 29 17:25:57 UTC 2025
+GCC version:  gcc version 14.2.0 (Debian 14.2.0-19) 
+### ct105 nvidia-smi
+| NVIDIA-SMI 580.82.09              Driver Version: 580.82.09      CUDA Version: 13.0     |
+### ct105 libnvidia-ml
+lrwxrwxrwx 1 root root      25 Sep 11  2025 /usr/lib/x86_64-linux-gnu/libnvidia-ml.so.1 -> libnvidia-ml.so.580.82.09
+-rwxr-xr-x 1 root root 2271320 Sep 11  2025 /usr/lib/x86_64-linux-gnu/libnvidia-ml.so.580.82.09
+### ct105 dpkg
+libnvidia-container-tools 1.18.2-1
+libnvidia-container1:amd64 1.18.2-1
+nvidia-container-toolkit 1.18.2-1
+nvidia-container-toolkit-base 1.18.2-1

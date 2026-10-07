@@ -1,0 +1,26 @@
+  WARNING: You have not turned on protection against thin pools running out of space.
+  WARNING: Set activation/thin_pool_autoextend_threshold below 100 to trigger automatic extension of thin pools before they get full.
+  Logical volume "snap_vm-105-disk-0_article-test-20261007-1" created.
+  WARNING: Sum of all thin volume sizes (<4.60 TiB) exceeds the size of thin pool hdd1/hdd1 and the size of whole volume group (<1.82 TiB).
+run 1 rc=0 start=1791380615.470867459 end=1791380616.708620259 elapsed=1.237752800s
+  WARNING: You have not turned on protection against thin pools running out of space.
+  WARNING: Set activation/thin_pool_autoextend_threshold below 100 to trigger automatic extension of thin pools before they get full.
+  Logical volume "snap_vm-105-disk-0_article-test-20261007-2" created.
+  WARNING: Sum of all thin volume sizes (<5.09 TiB) exceeds the size of thin pool hdd1/hdd1 and the size of whole volume group (<1.82 TiB).
+run 2 rc=0 start=1791380616.714706773 end=1791380617.914005811 elapsed=1.199299038s
+  WARNING: You have not turned on protection against thin pools running out of space.
+  WARNING: Set activation/thin_pool_autoextend_threshold below 100 to trigger automatic extension of thin pools before they get full.
+  Logical volume "snap_vm-105-disk-0_article-test-20261007-3" created.
+  WARNING: Sum of all thin volume sizes (5.57 TiB) exceeds the size of thin pool hdd1/hdd1 and the size of whole volume group (<1.82 TiB).
+run 3 rc=0 start=1791380617.919018322 end=1791380619.115302469 elapsed=1.196284147s
+### lvs
+  LV                                         LSize    Data%  Origin       
+  snap_vm-105-disk-0_article-test-20261007-1  500.00g        vm-105-disk-0
+  snap_vm-105-disk-0_article-test-20261007-2  500.00g        vm-105-disk-0
+  snap_vm-105-disk-0_article-test-20261007-3  500.00g        vm-105-disk-0
+  vm-105-disk-0                               500.00g 22.08               
+### pct listsnapshot
+`-> article-test-20261007-1     2026-10-07 08:43:36     no-description
+ `-> article-test-20261007-2    2026-10-07 08:43:37     no-description
+  `-> article-test-20261007-3   2026-10-07 08:43:38     no-description
+   `-> current                                          You are here!

@@ -1,0 +1,5 @@
+### cat /proc/driver/nvidia/version
+### start 1791380463.119939983
+NVRM version: NVIDIA UNIX Open Kernel Module for x86_64  580.82.09  Release Build  (dvs-builder@U22-I3-C16-01-3)  Fri Aug 29 17:25:57 UTC 2025
+GCC version:  gcc version 14.2.0 (Debian 14.2.0-19) 
+### rc=0 end 1791380463.122726367

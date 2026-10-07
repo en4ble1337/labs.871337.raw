@@ -1,0 +1,15 @@
+### pct config 106
+### start 1791380470.586334209
+arch: amd64
+cores: 4
+features: nesting=1
+hostname: <ct-other-3>
+memory: 2048
+net0: name=eth0,bridge=vmbr0,firewall=1,hwaddr=<mac>,ip=dhcp,tag=<vlan>,type=veth
+net1: name=net1,bridge=vmbr1,firewall=1,hwaddr=<mac>,ip=dhcp,type=veth
+onboot: 1
+ostype: ubuntu
+rootfs: hdd1:vm-106-disk-0,size=8G
+swap: 0
+unprivileged: 1
+### rc=0 end 1791380471.368459304

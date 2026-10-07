@@ -1,0 +1,22 @@
+### df -h
+### start 1791380465.695555269
+Filesystem                          Size  Used Avail Use% Mounted on
+udev                                 63G     0   63G   0% /dev
+tmpfs                                13G  3.3M   13G   1% /run
+rpool/ROOT/pve-1                    200G  7.9G  193G   4% /
+tmpfs                                63G   34M   63G   1% /dev/shm
+efivarfs                            128K   57K   67K  47% /sys/firmware/efi/efivars
+tmpfs                               5.0M     0  5.0M   0% /run/lock
+tmpfs                                63G     0   63G   0% /tmp
+tmpfs                               1.0M     0  1.0M   0% /run/credentials/systemd-journald.service
+/dev/mapper/hdd1-docker--thin--101  500G   61G  440G  13% /mnt/docker-xfs-101
+/dev/mapper/hdd1-docker--thin       500G  141G  360G  29% /mnt/docker-xfs
+rpool/var-lib-vz                    208G   16G  193G   8% /var/lib/vz
+rpool                               193G  128K  193G   1% /rpool
+rpool/ROOT                          193G  128K  193G   1% /rpool/ROOT
+rpool/data                          193G  128K  193G   1% /rpool/data
+rpool/data/subvol-9001-disk-0        35G  8.8G   27G  26% /rpool/data/subvol-9001-disk-0
+/dev/fuse                           128M   32K  128M   1% /etc/pve
+tmpfs                               1.0M     0  1.0M   0% /run/credentials/getty@tty1.service
+tmpfs                                13G  4.0K   13G   1% /run/user/0
+### rc=0 end 1791380465.701384766

@@ -1,0 +1,17 @@
+### host before
+        Current Power Limit               : 500.00 W
+        Requested Power Limit             : 500.00 W
+        Default Power Limit               : 575.00 W
+### ct105 view
+        Current Power Limit               : 500.00 W
+        Requested Power Limit             : 500.00 W
+        Default Power Limit               : 575.00 W
+### ct105: nvidia-smi -pl 500 (no-op)
+Power limit for GPU 00000000:C1:00.0 was set to 500.00 W from 500.00 W.
+All done.
+rc=0 start=1791380601.612193669 end=1791380602.451534215
+### host after
+        Current Power Limit               : 500.00 W
+        Requested Power Limit             : 500.00 W
+### unprivileged CT 106 has no /dev/nvidia*:
+ls: cannot access '/dev/nvidia*': No such file or directory

@@ -1,0 +1,6 @@
+### free -g
+### start 1791380465.688244988
+               total        used        free      shared  buff/cache   available
+Mem:             125          63           3           2          62          61
+Swap:              0           0           0
+### rc=0 end 1791380465.693591440

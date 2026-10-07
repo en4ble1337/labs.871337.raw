@@ -1,0 +1,19 @@
+  Logical volume "snap_vm-105-disk-0_before-break-2" successfully removed.
+delsnapshot before-break-2 rc=0 elapsed=2.151470664s
+  Logical volume "snap_vm-105-disk-0_before-break" successfully removed.
+delsnapshot before-break rc=0 elapsed=1.065687958s
+  Logical volume "snap_vm-105-disk-0_article-test-20261007-3" successfully removed.
+delsnapshot article-test-20261007-3 rc=0 elapsed=1.061774510s
+  Logical volume "snap_vm-105-disk-0_article-test-20261007-2" successfully removed.
+delsnapshot article-test-20261007-2 rc=0 elapsed=1.045213060s
+  Logical volume "snap_vm-105-disk-0_article-test-20261007-1" successfully removed.
+delsnapshot article-test-20261007-1 rc=0 elapsed=1.064677698s
+### listsnapshot
+`-> current                                             You are here!
+### lvs snaps
+0
+### config diff vs Phase 1
+CT 105 config identical to Phase 1
+status: running
+status: running
+3332087, 27150 MiB

@@ -1,0 +1,5 @@
+### nvidia-smi --query-compute-apps=pid,process_name,used_memory --format=csv
+### start 1791380463.226720541
+pid, process_name, used_gpu_memory [MiB]
+3332087, /opt/venv/bin/python, 27150 MiB
+### rc=0 end 1791380463.259309026

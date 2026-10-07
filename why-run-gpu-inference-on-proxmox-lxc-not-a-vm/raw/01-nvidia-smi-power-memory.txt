@@ -1,0 +1,51 @@
+### nvidia-smi -q -d POWER,MEMORY
+### start 1791380463.178986458
+
+==============NVSMI LOG==============
+
+Timestamp                                 : Wed Oct  7 08:41:03 2026
+Driver Version                            : 580.82.09
+CUDA Version                              : 13.0
+
+Attached GPUs                             : 1
+GPU 00000000:C1:00.0
+    FB Memory Usage
+        Total                             : 32607 MiB
+        Reserved                          : 498 MiB
+        Used                              : 27241 MiB
+        Free                              : 4870 MiB
+    BAR1 Memory Usage
+        Total                             : 256 MiB
+        Used                              : 4 MiB
+        Free                              : 252 MiB
+    Conf Compute Protected Memory Usage
+        Total                             : 0 MiB
+        Used                              : 0 MiB
+        Free                              : 0 MiB
+    GPU Power Readings
+        Average Power Draw                : 6.49 W
+        Instantaneous Power Draw          : 6.49 W
+        Current Power Limit               : 500.00 W
+        Requested Power Limit             : 500.00 W
+        Default Power Limit               : 575.00 W
+        Min Power Limit                   : 400.00 W
+        Max Power Limit                   : 600.00 W
+    Power Samples
+        Duration                          : 118.00 sec
+        Number of Samples                 : 119
+        Max                               : 7.60 W
+        Min                               : 6.17 W
+        Avg                               : 6.76 W
+    GPU Memory Power Readings 
+        Average Power Draw                : N/A
+        Instantaneous Power Draw          : N/A
+    Module Power Readings
+        Average Power Draw                : N/A
+        Instantaneous Power Draw          : N/A
+        Current Power Limit               : N/A
+        Requested Power Limit             : N/A
+        Default Power Limit               : N/A
+        Min Power Limit                   : N/A
+        Max Power Limit                   : N/A
+
+### rc=0 end 1791380463.224834944

@@ -1,0 +1,99 @@
+# Qwen3.8-27B NVFP4 (RTX 5090) on vLLM 0.29.0 — see /root/llm-upgrade/REPORT.md
+# Model: <model-repo> @ branch pre-final
+#        commit <model-commit> (NVFP4 lm_head, MTP head present;
+#        'main' removed the MTP head, so MTP speculative decoding needs this revision)
+name: vllm-qwen38
+services:
+  vllm:
+    image: vllm/vllm-openai:v0.29.0   # digest sha256:c291476760558...
+    container_name: vllm-qwen38
+    restart: "no"                      # lifecycle owned by systemd unit vllm-qwen38.service
+    ipc: host
+    init: true                         # tini as PID 1: clean signal handling / zombie reaping
+    ports: ["11434:8000"]              # same port as the previous Ollama service
+    volumes:
+      - /models:/models:ro
+      - /opt/vllm-qwen38/cache:/root/.cache   # FlashInfer JIT + torch.compile caches (fast restarts)
+    environment:
+      # vLLM 0.29 V2 model runner hangs on MTP + ~261K-token prefill; V1 runner is stable and faster.
+      VLLM_USE_V2_MODEL_RUNNER: "0"
+    deploy:
+      resources:
+        reservations:
+          devices: [{driver: nvidia, count: all, capabilities: [gpu]}]
+    logging:
+      driver: json-file
+      options: {max-size: "100m", max-file: "5"}
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://127.0.0.1:8000/health"]
+      interval: 30s
+      timeout: 10s
+      start_period: 900s
+    command:
+      - --model=/models/Qwen3.8-27B-NVFP4-RTX5090-pre-final
+      - --served-model-name=qwen3.8-27b
+      - --quantization=modelopt
+      - --kv-cache-dtype=fp8
+      - --trust-remote-code
+      - --max-model-len=262144
+      - --max-num-seqs=8
+      - --gpu-memory-utilization=0.98
+      - --enable-prefix-caching
+      - --enable-prompt-tokens-details
+      - --speculative-config={"method":"mtp","num_speculative_tokens":4}
+      - --reasoning-parser=qwen3
+      - --enable-auto-tool-choice
+      - --tool-call-parser=qwen3_xml
+      - --host=0.0.0.0
+      - --port=8000
+---WAIT
+#!/bin/bash
+# vLLM at --gpu-memory-utilization=0.98 needs ~30.7 GiB free at startup. Wait for other GPU users to release.
+for i in $(seq 1 90); do
+  used=$(nvidia-smi --query-gpu=memory.used --format=csv,noheader,nounits | head -1)
+  [ "$used" -lt 400 ] && exit 0
+  sleep 2
+done
+echo "WARNING: GPU still has ${used} MiB in use by: $(nvidia-smi --query-compute-apps=pid,process_name,used_memory --format=csv,noheader | tr '\n' ';')" >&2
+exit 0
+---JOURNAL
+Sep 18 20:31:45 <ct-test-a> docker[92525]: (EngineCore pid=215) 2026-09-18 20:31:45,326 - WARNING - autotuner.py:1688 - flashinfer.jit: [AutoTuner]: No tuned config covers fp4_gemm input_shapes=((3, 2560), (2560, 248320), (128, 320), (320, 248320), (), (0,), (3, 248320), (0,), (0,), (33554432,)); falling back to runner=CutlassFp4GemmRunner tactic=-1.  This shape is outside the tuning bucket range -- expand tuning_buckets / max_num_tokens during the next tuning pass to avoid this perf cliff.
+Sep 18 20:31:45 <ct-test-a> docker[92525]: (APIServer pid=7) INFO:     <docker-bridge-ip>:46024 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+Sep 18 20:31:45 <ct-test-a> docker[92525]: (APIServer pid=7) INFO:     <docker-bridge-ip>:46040 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+Sep 18 20:31:45 <ct-test-a> docker[92525]: (APIServer pid=7) INFO:     <docker-bridge-ip>:46048 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+Sep 18 20:31:45 <ct-test-a> docker[92525]: (EngineCore pid=215) 2026-09-18 20:31:45,817 - WARNING - autotuner.py:1688 - flashinfer.jit: [AutoTuner]: No tuned config covers fp4_gemm input_shapes=((20, 2560), (2560, 248320), (128, 320), (320, 248320), (), (0,), (20, 248320), (0,), (0,), (33554432,)); falling back to runner=CutlassFp4GemmRunner tactic=-1.  This shape is outside the tuning bucket range -- expand tuning_buckets / max_num_tokens during the next tuning pass to avoid this perf cliff.
+Sep 18 20:31:45 <ct-test-a> docker[92525]: (EngineCore pid=215) WARNING 09-18 20:31:45 [jit_monitor.py:141] Triton kernel JIT compilation during inference: _topk_topp_kernel. This causes a latency spike; consider extending warmup to cover this shape/config.
+Sep 18 20:31:46 <ct-test-a> docker[92525]: (APIServer pid=7) INFO:     <docker-bridge-ip>:46064 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+Sep 18 20:31:46 <ct-test-a> docker[92525]: (APIServer pid=7) INFO:     <docker-bridge-ip>:46078 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+Sep 18 20:31:46 <ct-test-a> docker[92525]: (APIServer pid=7) INFO:     <docker-bridge-ip>:46094 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+Sep 18 20:31:46 <ct-test-a> docker[92525]: (APIServer pid=7) INFO:     <docker-bridge-ip>:46102 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+Sep 18 20:31:46 <ct-test-a> docker[92525]: (APIServer pid=7) INFO:     <docker-bridge-ip>:46110 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+Sep 18 20:31:46 <ct-test-a> docker[92525]: (APIServer pid=7) INFO:     <docker-bridge-ip>:46122 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+Sep 18 20:31:46 <ct-test-a> docker[92525]: (APIServer pid=7) INFO:     <docker-bridge-ip>:46138 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+Sep 18 20:31:46 <ct-test-a> docker[92525]: (APIServer pid=7) INFO:     <docker-bridge-ip>:46140 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+Sep 18 20:31:46 <ct-test-a> docker[92525]: (APIServer pid=7) INFO:     <docker-bridge-ip>:46158 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+Sep 18 20:31:46 <ct-test-a> docker[92525]: (APIServer pid=7) INFO:     <docker-bridge-ip>:46154 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+Sep 18 20:31:47 <ct-test-a> docker[92525]: (EngineCore pid=215) 2026-09-18 20:31:47,162 - WARNING - autotuner.py:1688 - flashinfer.jit: [AutoTuner]: No tuned config covers fp4_gemm input_shapes=((40, 2560), (2560, 248320), (128, 320), (320, 248320), (), (0,), (40, 248320), (0,), (0,), (33554432,)); falling back to runner=CutlassFp4GemmRunner tactic=-1.  This shape is outside the tuning bucket range -- expand tuning_buckets / max_num_tokens during the next tuning pass to avoid this perf cliff.
+Sep 18 20:31:47 <ct-test-a> docker[92525]: (APIServer pid=7) INFO:     <docker-bridge-ip>:46172 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+Sep 18 20:31:47 <ct-test-a> docker[92525]: (APIServer pid=7) INFO:     <docker-bridge-ip>:46164 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+Sep 18 20:31:47 <ct-test-a> docker[92525]: (APIServer pid=7) INFO:     <docker-bridge-ip>:46178 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+Sep 18 20:31:47 <ct-test-a> docker[92525]: (APIServer pid=7) INFO:     <docker-bridge-ip>:46194 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+Sep 18 20:31:47 <ct-test-a> docker[92525]: (APIServer pid=7) INFO:     <docker-bridge-ip>:46220 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+Sep 18 20:31:47 <ct-test-a> docker[92525]: (APIServer pid=7) INFO:     <docker-bridge-ip>:46206 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+Sep 18 20:31:47 <ct-test-a> docker[92525]: (APIServer pid=7) INFO:     <docker-bridge-ip>:46182 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+Sep 18 20:31:47 <ct-test-a> docker[92525]: (APIServer pid=7) INFO:     <docker-bridge-ip>:46232 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+Sep 18 20:31:51 <ct-test-a> docker[92525]: (APIServer pid=7) INFO 09-18 20:31:51 [loggers.py:310] Engine 000: Avg prompt throughput: 14.7 tokens/s, Avg generation throughput: 38.0 tokens/s, Running: 0 reqs, Waiting: 0 reqs, GPU KV cache usage: 0.0%, Prefix cache hit rate: 0.0%
+Sep 18 20:31:51 <ct-test-a> docker[92525]: (APIServer pid=7) INFO 09-18 20:31:51 [metrics.py:120] SpecDecoding metrics: Mean acceptance length: 4.68, Accepted throughput: 30.11 tokens/s, Drafted throughput: 32.71 tokens/s, Accepted: 1219 tokens, Drafted: 1324 tokens, Per-position acceptance rate: 0.973, 0.940, 0.912, 0.858, Avg Draft acceptance rate: 92.1%
+Sep 18 20:31:57 <ct-test-a> docker[93889]:  Container vllm-qwen38 Stopped
+Sep 18 20:31:57 <ct-test-a> docker[93889]:  Container vllm-qwen38 Removing
+Sep 18 20:31:57 <ct-test-a> docker[92525]: [36B blob data]
+Sep 18 20:31:57 <ct-test-a> docker[92525]:  Compose Stopping Aborting on container exit...
+Sep 18 20:31:57 <ct-test-a> docker[92525]:  Container vllm-qwen38 Stopping
+Sep 18 20:31:57 <ct-test-a> docker[92525]:  Container vllm-qwen38 Stopped
+Sep 18 20:31:57 <ct-test-a> systemd[1]: vllm-qwen38.service: Main process exited, code=exited, status=137/n/a
+Sep 18 20:31:57 <ct-test-a> docker[93889]:  Container vllm-qwen38 Removed
+Sep 18 20:31:57 <ct-test-a> docker[93889]:  Network vllm-qwen38_default Removing
+Sep 18 20:31:57 <ct-test-a> docker[93889]:  Network vllm-qwen38_default Removed
+Sep 18 20:31:57 <ct-test-a> systemd[1]: vllm-qwen38.service: Failed with result 'exit-code'.
+Sep 18 20:31:57 <ct-test-a> systemd[1]: Stopped vLLM OpenAI server - Qwen3.8-27B NVFP4 (port 11434).
+Sep 18 20:31:57 <ct-test-a> systemd[1]: vllm-qwen38.service: Consumed 1.022s CPU time.

@@ -1,0 +1,17 @@
+== CT 101: status: running
+config identical to Phase 1
+== CT 102: status: running
+config identical to Phase 1
+== CT 103: status: running
+config identical to Phase 1
+== CT 104: status: stopped
+config identical to Phase 1
+== CT 105: status: running
+7a8
+> parent: before-break-2
+== CT 106: status: running
+config identical to Phase 1
+== CT 9001: status: running
+config identical to Phase 1
+== CT 9996: status: stopped
+config identical to Phase 1
